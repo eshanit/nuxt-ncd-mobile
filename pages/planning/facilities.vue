@@ -8,8 +8,9 @@ const useFacilities = useFacilitiesStore()
 
 const showAlert = ref(false)
 
-const facilities = computed(() => JSON.parse(useFacilities.facilities));
+//const facilities = computed(() => JSON.parse(useFacilities.facilities));
 
+const facilities: any = useProcessLocalStorage().retrieve(LocalStorageKeys.FACILITIES_FOR_SELECTED_DISTRICT)
 
 const nextStep = async () => {
     //step 1 check to see if there is an entry in selected CoMentors

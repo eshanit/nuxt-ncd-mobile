@@ -15,7 +15,7 @@ export const useEvalDataStore = defineStore("evaluations", () => {
 
   const vo: any[]  = []
 
-  const evaluationScores: RemovableRef<Array<IEvalScore>> = useStorage(LocalStorageKeys.EVALUATION_SCORES, vm);
+  const evaluationScores: RemovableRef<any> = useStorage(LocalStorageKeys.EVALUATION_SCORES, null) || vm;
 
   const menteeEvalReportData = useStorage(LocalStorageKeys.MENTEE_EVALUATION_REPORT_DATA, vn);
 

@@ -81,6 +81,12 @@ const COMPLETE_REPORTS = {
     title: 'Complete Reports'
 }
 
+const SYNC = {
+    path: '/syncing',
+    name: 'syncing',
+    title: 'Sync Data'
+}
+
 export default {
     INDEX,
     LOGIN,
@@ -95,6 +101,7 @@ export default {
     MENTEES,
     CHAPTER_MARKER,
     INCOMPLETE_REPORTS,
-    COMPLETE_REPORTS
+    COMPLETE_REPORTS,
+    SYNC
   };
   

@@ -1,12 +1,13 @@
 import pouchDBConnect from "@/utilities/pouchDbConnect";
-import PouchDB from "pouchdb";
+const toast = useToast()
+
 
 const config = useRuntimeConfig();
 const couchDBUsername = config.public.couchDBUsername;
 const couchDBPassword = config.public.couchDBPassword;
 
 
-const useReplicateFromCouchDB = async (databaseName: string ) => {
+const useReplicateToCouchDB = async (databaseName: string ): Promise<any> => {
 
     //setup
     const localDB = pouchDBConnect(databaseName)
@@ -15,31 +16,43 @@ const useReplicateFromCouchDB = async (databaseName: string ) => {
       })
     
     //sync
-         try {
-            await remoteDB.logIn(couchDBUsername, couchDBPassword);
-            
-           const syncHandler = await PouchDB.replicate(remoteDB,localDB, {
-                live: true,
-                retry: true
-            }).on('change', (change: { last_seq: any; }) => {
-                var lastSeq = change.last_seq;
-                console.log("lastSeq is: " + lastSeq);
-    
-            }).on('paused', () => {
-                console.log('complete');
-            }).on('complete', (info: { status: any; }) => {
-                console.log(databaseName, info.status);
-                
-            }).on('error', (err: any) => {
-                console.error(databaseName, err);
-            });
-    
-          console.log('status', syncHandler.status)  
-    
-        } catch (err_1) {
-            console.error('Remote Login Error', err_1);
-        }
+   return remoteDB.logIn(couchDBUsername, couchDBPassword).then(() => {
+      return   localDB.replicate.from(remoteDB, {
+          live: true,
+          retry: true,
+        })
+          .on("paused", () => {
+            console.log("complete: ",config.public.couchDBUrl, remoteDB , localDB);
+            toast.add({
+                title: `You have successifully synced ${databaseName}`,
+                color: 'sky'
+              })
+           return true;
+          })
+          .on("denied", (denied) => {
+            console.log(databaseName, denied);
+            toast.add({
+                title: `Syncing ${databaseName} has been denied`,
+                color: 'rose'
+              })
+          })
+          .on("error", (err: any) => {
+            console.error(databaseName, err);
+            toast.add({
+                title: `Syncing ${databaseName} has an error, please contact admin`,
+                color: 'rose'
+              })
+          });
+      })
+      .catch((err: any) => {
+        console.error("Remote Login Error", err);
+        toast.add({
+            title: `Syncing ${databaseName} has been denied, please check your credentials`,
+            color: 'rose'
+          })
+      });
+      
     
     }
     
-    export default useReplicateFromCouchDB;
+    export default useReplicateToCouchDB;
